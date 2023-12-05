@@ -8,8 +8,8 @@ abstract final class LocalDataSource {
   );
 }
 
-final class LocalDataSourceImplementation implements LocalDataSource {
-  const LocalDataSourceImplementation();
+final class LocalDataSourceImpl implements LocalDataSource {
+  const LocalDataSourceImpl();
 
   @override
   Future<String?> createWav(

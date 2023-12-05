@@ -18,11 +18,24 @@ final class ApiCallsState extends ApiCallsCounterState {
   });
 
   final int count;
-  final List<String> lastThreeResults;
+  final List<TranscriptionEntity> lastThreeResults;
 
   @override
   List<Object?> get props => [
         count,
         lastThreeResults,
+      ];
+}
+
+final class ApiCallsFailedState extends ApiCallsCounterState {
+  const ApiCallsFailedState(
+    this.failure,
+  );
+
+  final Failure failure;
+
+  @override
+  List<Object?> get props => [
+        failure,
       ];
 }

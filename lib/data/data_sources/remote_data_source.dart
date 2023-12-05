@@ -11,8 +11,8 @@ abstract final class RemoteDataSource {
   );
 }
 
-final class RemoteDataSourceImplementation implements RemoteDataSource {
-  const RemoteDataSourceImplementation();
+final class RemoteDataSourceImpl implements RemoteDataSource {
+  const RemoteDataSourceImpl();
 
   @override
   Future<TranscriptionModel?> sendAudioWav(

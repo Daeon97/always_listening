@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:always_listening/core/errors/failure.dart';
+import 'package:always_listening/domain/entities/transcription_entity.dart';
 import 'package:always_listening/domain/usecases/create_wav_use_case.dart';
 import 'package:always_listening/domain/usecases/send_audio_wav_use_case.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 part 'api_calls_counter_event.dart';
@@ -20,20 +23,22 @@ class ApiCallsCounterBloc
         ) {
     on<StartOperation>(
       (event, emit) async {
-        if (streamSubscription != null) {
-          await streamSubscription!.cancel();
-          streamSubscription = null;
+        if (audioStreamSubscription != null) {
+          await audioStreamSubscription!.cancel();
+          audioStreamSubscription = null;
         }
-        streamSubscription = streamSubscription = Stream.periodic(
-          const Duration(
-            seconds: 5,
-          ),
-        ).listen(
+
+        // final currentTimeSecond = DateTime.now().second;
+
+        audioStreamSubscription =
+            const EventChannel("com.engels_immanuel.always_listening")
+                .receiveBroadcastStream()
+                .listen(
           (event) {
-            // invoke method channel first and get audio stream
-            // final createWav = createWavUseCase(); //send audio stream to create wav use case
-            // final sendWav = sendAudioWavUseCase();// use audio path returned from createWav to send to API
-            // Then emit a new state. The state is always persisted when  we emit new state since we use hydrated BLoC
+            print('I have no idea what this is. Lets see --> $event');
+            // if (currentTimeSecond % 5 == 0) {
+            //   // collect
+            // }
           },
         );
       },
@@ -41,9 +46,9 @@ class ApiCallsCounterBloc
 
     on<StopOperation>(
       (event, emit) async {
-        if (streamSubscription != null) {
-          await streamSubscription!.cancel();
-          streamSubscription = null;
+        if (audioStreamSubscription != null) {
+          await audioStreamSubscription!.cancel();
+          audioStreamSubscription = null;
         }
       },
     );
@@ -52,7 +57,7 @@ class ApiCallsCounterBloc
   final SendAudioWavUseCase sendAudioWavUseCase;
   final CreateWavUseCase createWavUseCase;
 
-  StreamSubscription? streamSubscription;
+  StreamSubscription? audioStreamSubscription;
 
   @override
   ApiCallsCounterState? fromJson(

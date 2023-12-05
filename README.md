@@ -1,10 +1,10 @@
 # always_listening
-When the flutter app is launched, the api calls counter bloc does all the work
-First it subscribes to a timer stream which executes events every 5 seconds.
-The current implement does this only when the app is in foreground. Once it leaves
-foreground the timer stream is unsubscribed, but the app still listens for audio
-in the background on the Kotlin side.
+When the flutter app is launched, the api calls counter bloc which does all the work.
 
-At 5 seconds intervals it invokes the method channel and gets the audio stream from the
-kotlin side and sends it to the create wav use case. The result from create wav use case 
-is then sent to the send audio wav use case and whatever this returns is persisted by hydrated bloc
+First it subscribes to the audio stream, collects and appends the audio data. Once it
+has determined that the audio is 5 seconds long, it sends the raw audio stream to the
+create wav use case that is in charge of creating and storing the wav file locally.
+Once the creation of the wav file is complete the file path is then sent to the send audio
+wav use case which is in charge of sending the wav file to an endpoint. The result of this
+network request is then persisted by hydrated bloc. The UI is notified of subsequent changes
+and it rebuilds itself accordingly
