@@ -8,10 +8,10 @@ part of 'transcription_model.dart';
 
 TranscriptionModel _$TranscriptionModelFromJson(Map<String, dynamic> json) =>
     TranscriptionModel(
-      json['text'] as String,
+      json['transcription'] as String,
     );
 
 Map<String, dynamic> _$TranscriptionModelToJson(TranscriptionModel instance) =>
     <String, dynamic>{
-      'text': instance.text,
+      'transcription': instance.transcription,
     };

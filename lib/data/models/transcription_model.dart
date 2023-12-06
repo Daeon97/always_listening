@@ -6,8 +6,10 @@ part 'transcription_model.g.dart';
 @JsonSerializable()
 final class TranscriptionModel extends TranscriptionEntity {
   const TranscriptionModel(
-    super.text,
-  );
+    this.transcription,
+  ) : super(
+          transcription,
+        );
 
   factory TranscriptionModel.fromJson(
     Map<String, dynamic> json,
@@ -15,6 +17,8 @@ final class TranscriptionModel extends TranscriptionEntity {
       _$TranscriptionModelFromJson(
         json,
       );
+
+  final String transcription;
 
   Map<String, dynamic> toJson() => _$TranscriptionModelToJson(
         this,
