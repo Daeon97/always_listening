@@ -1,23 +1,47 @@
-import 'dart:typed_data';
+import 'dart:io';
+
+import 'package:ffmpeg_kit_flutter_full/ffmpeg_kit.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 
 abstract final class LocalDataSource {
   const LocalDataSource();
 
   Future<String?> createWav(
-    Stream<Uint8List> audio,
+    String filePath,
   );
 }
 
-final class LocalDataSourceImplementation implements LocalDataSource {
-  const LocalDataSourceImplementation();
+final class LocalDataSourceImpl implements LocalDataSource {
+  const LocalDataSourceImpl();
 
   @override
   Future<String?> createWav(
-    Stream<Uint8List> audio,
+    String filePath,
   ) async {
     try {
-      // create wav file. Return null if there was an issue creating file
-      return null;
+      const fileName = 'Audio';
+
+      final wavFile = File(
+        '$filePath/$fileName.wav',
+      );
+      if (await wavFile.exists()) {
+        await wavFile.delete();
+      }
+
+      final ffmpegSession = await FFmpegKit.executeAsync(
+        '-i $filePath/$fileName.mp4 -c:v wav $filePath/$fileName.wav',
+      );
+
+      // Just for logging purposes
+      // -------------------------------------------------------------
+      if (kDebugMode) {
+        final allLogsAsString = await ffmpegSession.getAllLogsAsString();
+        final output = await ffmpegSession.getOutput();
+        print('$allLogsAsString $output');
+      }
+      // -------------------------------------------------------------
+
+      return '$filePath/$fileName.wav';
     } catch (_) {
       return null;
     }
