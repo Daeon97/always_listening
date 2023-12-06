@@ -13,7 +13,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     context.read<ApiCallsCounterBloc>().add(
-          const StartOperation(),
+          const StartOperationEvent(),
         );
     super.initState();
   }
@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void deactivate() {
     context.read<ApiCallsCounterBloc>().add(
-          const StopOperation(),
+          const StopOperationEvent(),
         );
     super.deactivate();
   }
@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   alignment: AlignmentDirectional.center,
                   child: Text(
                     switch (apiCallsCounterState) {
-                      ApiCallsState(
+                      ApiCallsSuccessState(
                         :final count,
                         lastThreeResults: final _,
                       ) =>
@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         failure.message,
                       ),
                     ),
-                  ApiCallsState(
+                  ApiCallsSuccessState(
                     count: final _,
                     :final lastThreeResults,
                   ) =>

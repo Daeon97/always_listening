@@ -4,10 +4,10 @@ import 'package:always_listening/core/errors/failure.dart';
 import 'package:always_listening/domain/entities/transcription_entity.dart';
 import 'package:always_listening/domain/usecases/create_wav_use_case.dart';
 import 'package:always_listening/domain/usecases/send_audio_wav_use_case.dart';
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 
 part 'api_calls_counter_event.dart';
 
@@ -21,34 +21,87 @@ class ApiCallsCounterBloc
   }) : super(
           const ApiCallsInitialState(),
         ) {
-    on<StartOperation>(
+    on<StartOperationEvent>(
       (event, emit) async {
-        if (audioStreamSubscription != null) {
-          await audioStreamSubscription!.cancel();
-          audioStreamSubscription = null;
+        const MethodChannel(
+          "com.engels_immanuel.always_listening",
+        ).invokeMethod(
+          "alwaysListen",
+        );
+
+        if (streamSubscription != null) {
+          await streamSubscription!.cancel();
+          streamSubscription = null;
         }
 
-        // final currentTimeSecond = DateTime.now().second;
-
-        audioStreamSubscription =
-            const EventChannel("com.engels_immanuel.always_listening")
-                .receiveBroadcastStream()
-                .listen(
-          (event) {
-            print('I have no idea what this is. Lets see --> $event');
-            // if (currentTimeSecond % 5 == 0) {
-            //   // collect
-            // }
+        streamSubscription = Stream.periodic(
+          const Duration(
+            seconds: 10,
+          ),
+        ).listen(
+          (_) async {
+            final directory = await getExternalStorageDirectory();
+            final failureOrWavFilePath = await createWavUseCase(
+              directory!.path,
+            );
+            failureOrWavFilePath.fold(
+              (failure) => add(
+                _EmitFailureEvent(
+                  failure,
+                ),
+              ),
+              (wavFilePath) => add(
+                _DispatchRequestEvent(
+                  wavFilePath,
+                ),
+              ),
+            );
           },
         );
       },
     );
 
-    on<StopOperation>(
+    on<_DispatchRequestEvent>(
       (event, emit) async {
-        if (audioStreamSubscription != null) {
-          await audioStreamSubscription!.cancel();
-          audioStreamSubscription = null;
+        final failureOrTranscriptionEntity = await sendAudioWavUseCase(
+          event.wavFilePath,
+        );
+        failureOrTranscriptionEntity.fold(
+          (failure) => add(
+            _EmitFailureEvent(
+              failure,
+            ),
+          ),
+          (transcriptionEntity) => add(
+            _EmitTranscriptionEntityEvent(
+              transcriptionEntity,
+            ),
+          ),
+        );
+      },
+    );
+
+    on<_EmitTranscriptionEntityEvent>(
+      (event, emit) => emit(
+        TranscriptionSuccessState(
+          event.transcriptionEntity,
+        ),
+      ),
+    );
+
+    on<_EmitFailureEvent>(
+      (event, emit) => emit(
+        ApiCallsFailedState(
+          event.failure,
+        ),
+      ),
+    );
+
+    on<StopOperationEvent>(
+      (event, emit) async {
+        if (streamSubscription != null) {
+          await streamSubscription!.cancel();
+          streamSubscription = null;
         }
       },
     );
@@ -57,21 +110,19 @@ class ApiCallsCounterBloc
   final SendAudioWavUseCase sendAudioWavUseCase;
   final CreateWavUseCase createWavUseCase;
 
-  StreamSubscription? audioStreamSubscription;
+  StreamSubscription? streamSubscription;
 
   @override
   ApiCallsCounterState? fromJson(
     Map<String, dynamic> json,
   ) {
-    // TODO: implement fromJson
-    throw UnimplementedError();
+    return null;
   }
 
   @override
   Map<String, dynamic>? toJson(
     ApiCallsCounterState state,
   ) {
-    // TODO: implement toJson
-    throw UnimplementedError();
+    return null;
   }
 }

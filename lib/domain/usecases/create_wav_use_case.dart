@@ -6,7 +6,7 @@ import 'package:dartz/dartz.dart';
 
 abstract class CreateWavUseCase {
   Future<Either<Failure, String>> call(
-    Stream<Uint8List> audio,
+    String filePath,
   );
 }
 
@@ -19,9 +19,9 @@ final class CreateWavUseCaseImpl implements CreateWavUseCase {
 
   @override
   Future<Either<Failure, String>> call(
-    Stream<Uint8List> audio,
+    String filePath,
   ) =>
       createWavRepository(
-        audio,
+        filePath,
       );
 }

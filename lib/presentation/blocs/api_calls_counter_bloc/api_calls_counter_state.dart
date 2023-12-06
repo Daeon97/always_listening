@@ -11,8 +11,8 @@ final class ApiCallsInitialState extends ApiCallsCounterState {
   List<Object?> get props => [];
 }
 
-final class ApiCallsState extends ApiCallsCounterState {
-  const ApiCallsState({
+final class ApiCallsSuccessState extends ApiCallsCounterState {
+  const ApiCallsSuccessState({
     required this.count,
     required this.lastThreeResults,
   });
@@ -24,6 +24,19 @@ final class ApiCallsState extends ApiCallsCounterState {
   List<Object?> get props => [
         count,
         lastThreeResults,
+      ];
+}
+
+final class TranscriptionSuccessState extends ApiCallsCounterState {
+  const TranscriptionSuccessState(
+    this.transcriptionEntity,
+  );
+
+  final TranscriptionEntity transcriptionEntity;
+
+  @override
+  List<Object?> get props => [
+        transcriptionEntity,
       ];
 }
 

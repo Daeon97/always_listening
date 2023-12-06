@@ -19,7 +19,6 @@ class App extends StatelessWidget {
         providers: _repositoryProviders,
         child: MultiBlocProvider(
           providers: _blocProviders,
-          // look for a way to just 'watch' brightnessState
           child: const MaterialApp(
             home: HomeScreen(),
           ),

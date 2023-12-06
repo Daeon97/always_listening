@@ -5,6 +5,6 @@ import 'package:dartz/dartz.dart';
 
 abstract class CreateWavRepository {
   Future<Either<Failure, String>> call(
-      Stream<Uint8List> audio,
-      );
+    String filePath,
+  );
 }

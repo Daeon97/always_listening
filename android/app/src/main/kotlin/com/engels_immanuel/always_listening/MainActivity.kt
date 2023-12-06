@@ -5,31 +5,31 @@ import android.os.Build
 import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.EventChannel
-import io.flutter.plugin.common.EventChannel.StreamHandler
+import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
     private val methodChannel = "com.engels_immanuel.always_listening"
-    private val methodName = "alwaysListen"
+    private val alwaysListenMethodName = "alwaysListen"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         Log.w("MainActivity", "configureFlutterEngine called")
 
         super.configureFlutterEngine(flutterEngine)
 
-        EventChannel(flutterEngine.dartExecutor.binaryMessenger, methodChannel).setStreamHandler(
-            object : StreamHandler {
-                override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-                    Log.w("MainActivity", "onListen called")
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            methodChannel
+        ).setMethodCallHandler { call, result ->
+            when (call.method) {
+                alwaysListenMethodName -> {
+                    Log.w("MainActivity", "$alwaysListenMethodName method called")
 
                     startAlwaysListeningService()
                 }
 
-                override fun onCancel(arguments: Any?) {
-                    Log.w("MainActivity", "onCancel called")
-                }
+                else -> result.notImplemented()
             }
-        )
+        }
     }
 
     private fun startAlwaysListeningService() {

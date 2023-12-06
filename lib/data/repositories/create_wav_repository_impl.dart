@@ -14,19 +14,19 @@ final class CreateWavRepositoryImpl implements CreateWavRepository {
 
   @override
   Future<Either<Failure, String>> call(
-    Stream<Uint8List> audio,
+    String filePath,
   ) async {
-    final filePath = await localDataSource.createWav(
-      audio,
+    final path = await localDataSource.createWav(
+      filePath,
     );
-    return switch (filePath) {
+    return switch (path) {
       null => const Left(
           Failure(
             'Could not create wav file',
           ),
         ),
       _ => Right(
-          filePath,
+          path,
         )
     };
   }
